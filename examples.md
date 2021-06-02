@@ -38,3 +38,35 @@ message.channel.send('Hey, i am powered by https://npmjs.com/discord-buttons', b
 | Blurple        | ![Blurple_Style](https://cdn.discordapp.com/attachments/846455339419172874/848282426395852830/Button_Blurple.png) |
 | grey (or gray) | ![Grey_Style](https://cdn.discordapp.com/attachments/846455339419172874/848291827736117308/Button_Green5.png)     |
 | URL            | ![URL_Style](https://cdn.discordapp.com/attachments/846455339419172874/848290582706782308/Button_Green4.png)      |
+
+
+# Typescript Example
+
+```ts
+import { Client, Message } from 'discord.js'
+import disbut, { ButtonEvent } from 'discord-buttons'
+
+const client: Client = new Client({
+    presence: {activity: {name: 'MobaBot V2'}, status: 'online'},
+    partials: ['MESSAGE', 'REACTION'],
+})
+disbut(client)
+
+client.on('message', function (message: Message) {
+
+    if (message !== "!test-button") return
+
+    const button = new MessageButton()
+        .setStyle(MessageButtonStyles.DESTRUCTIVE)
+        .setLabel('My First Button!')
+        .setID('click_to_function')
+
+    channel.send('Hey, i am powered by https://npmjs.com/discord-buttons', button)
+})
+
+client.on('clickButton', async (button: ButtonEvent) => {
+    button.reply.send('I was clicked!', { ephemeral: true })
+})
+
+client.login(process.env.BOT_TOKEN)
+```

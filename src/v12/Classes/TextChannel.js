@@ -1,32 +1,35 @@
 const { Structures } = require("discord.js");
 const { APIMessage } = require('./APIMessage');
 
-class TextChannel extends Structures.get("TextChannel") {
-    async send(content, options) {
-        const User = Structures.get('User');
-        const GuildMember = Structures.get('GuildMember');
+module.exports = Structures.extend('TextChannel', TextChannel => {
 
-        if (this instanceof User || this instanceof GuildMember) {
-            return this.createDM().then(dm => dm.send(content, options));
-        }
+    class ExtendedTextChannel extends TextChannel {
+        async send(content, options) {
+            const User = Structures.get('User');
+            const GuildMember = Structures.get('GuildMember');
 
-        let apiMessage;
+            if (this instanceof User || this instanceof GuildMember) {
+                return this.createDM().then(dm => dm.send(content, options));
+            }
 
-        if (content instanceof APIMessage) {
-            apiMessage = content.resolveData();
-        } else {
-            apiMessage = APIMessage.create(this, content, options).resolveData();
-        }
+            let apiMessage;
 
-        if (Array.isArray(apiMessage.data.content)) {
-            return Promise.all(apiMessage.data.content.map(this.send.bind(this)));
-        }
+            if (content instanceof APIMessage) {
+                apiMessage = content.resolveData();
+            } else {
+                apiMessage = APIMessage.create(this, content, options).resolveData();
+            }
 
-        const { data, files } = await apiMessage.resolveFiles();
-        return this.client.api.channels[this.id].messages
-            .post({ data, files })
+            if (Array.isArray(apiMessage.data.content)) {
+                return Promise.all(apiMessage.data.content.map(this.send.bind(this)));
+            }
+
+            const {data, files} = await apiMessage.resolveFiles();
+            return this.client.api.channels[this.id].messages
+            .post({data, files})
             .then(d => this.client.actions.MessageCreate.handle(d).message);
+        }
     }
-}
 
-module.exports = TextChannel;
+    return ExtendedTextChannel
+});
