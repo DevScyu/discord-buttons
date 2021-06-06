@@ -44,29 +44,27 @@ message.channel.send('Hey, i am powered by https://npmjs.com/discord-buttons', b
 
 ```ts
 import { Client, Message } from 'discord.js'
-import disbut, { ButtonEvent } from 'discord-buttons'
+import disbut, { ButtonEvent, ExtendedTextChannel, MessageButton, MessageButtonStyles } from 'discord-buttons'
 
-const client: Client = new Client({
-    presence: {activity: {name: 'MobaBot V2'}, status: 'online'},
-    partials: ['MESSAGE', 'REACTION'],
-})
+const client: Client = new Client()
 disbut(client)
 
-client.on('message', function (message: Message) {
-
-    if (message !== "!test-button") return
-
+client.on('message', async function (message: Message) {
+    if (message.content !== '!test-button') return
     const button = new MessageButton()
-        .setStyle(MessageButtonStyles.DESTRUCTIVE)
-        .setLabel('My First Button!')
-        .setID('click_to_function')
+    .setStyle(MessageButtonStyles.DESTRUCTIVE)
+    .setLabel('My First Button!')
+    .setID('click_to_function');
 
-    channel.send('Hey, i am powered by https://npmjs.com/discord-buttons', button)
+    const channel = message.channel as ExtendedTextChannel
+
+    await channel.send('Hey, i am powered by https://npmjs.com/discord-buttons', button)
 })
 
 client.on('clickButton', async (button: ButtonEvent) => {
-    button.reply.send('I was clicked!', { ephemeral: true })
+    await button.reply.send('I was clicked!', { ephemeral: true })
 })
 
 client.login(process.env.BOT_TOKEN)
+
 ```
