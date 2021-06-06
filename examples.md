@@ -52,9 +52,9 @@ disbut(client)
 client.on('message', async function (message: Message) {
     if (message.content !== '!test-button') return
     const button = new MessageButton()
-    .setStyle(MessageButtonStyles.DESTRUCTIVE)
-    .setLabel('My First Button!')
-    .setID('click_to_function');
+        .setStyle(MessageButtonStyles.DESTRUCTIVE)
+        .setLabel('My First Button!')
+        .setID('click_to_function');
 
     const channel = message.channel as ExtendedTextChannel
 
